@@ -1,0 +1,47 @@
+/*默认*/
+.node-default {
+    z-index: 24;
+    background-color: white;
+    border: 1px solid #346789;
+    border-radius: 0.5em;
+    position: absolute;
+    cursor: pointer;
+    box-shadow: 2px 2px 19px #aaa;
+    -o-box-shadow: 2px 2px 19px #aaa;
+    -webkit-box-shadow: 2px 2px 19px #aaa;
+    -moz-box-shadow: 2px 2px 19px #aaa;
+    -webkit-transition: -webkit-box-shadow 0.15s ease-in;
+    -moz-transition: -moz-box-shadow 0.15s ease-in;
+    -o-transition: -o-box-shadow 0.15s ease-in;
+    transition: box-shadow 0.15s ease-in;
+}
+
+.node-current {
+    border:3px solid #1c84c6;
+}
+
+.node-hang {
+    border:3px solid #f8ac59;
+}
+
+.node-signing {
+    border:3px solid #0099C6;
+}
+
+.node-done {
+    border:3px solid #1ab394;
+}
+
+.node-start {
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
+    border:2px solid #1ab394;
+}
+
+.node-end {
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
+    border:2px solid #D2691E;
+}

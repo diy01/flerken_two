@@ -1,0 +1,54 @@
+.cssNav li{
+	padding-left: 30px;
+    padding-right: 10px;
+	line-height: 40px;
+	background: #50abe4;
+	display: inline-block;
+	color: #fff;
+	position: relative;
+}
+
+.cssNav li:after{
+	content: '';
+	display: block;
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	border-left: 20px solid #50abe4;
+	position: absolute;
+	right: -20px;
+	top: 0;
+	z-index: 10;
+}
+
+.cssNav li:before{
+	content: '';
+	display: block;
+	border-top: 20px solid transparent;
+	border-bottom: 20px solid transparent;
+	border-left: 20px solid #ffffff;
+	position: absolute;
+	left: 0px;
+	top: 0;
+}
+
+.cssNav li:first-child{
+    border-radius: 0px;
+    padding-left: 25px;
+}
+/*.cssNav li:last-child,.cssNavEnd{*/
+    /*border-radius: 0px 4px 4px 0px;*/
+    /*padding-right: 25px;*/
+/*}*/
+.cssNav li:first-child:before{
+    display: none;
+}
+/*.cssNav li:last-child:after,.cssNavEnd:after{*/
+    /*display: none;*/
+/*}*/
+
+li a {
+    color: #ffffff;
+}
+li a:hover {
+    color: #ffffff;
+}

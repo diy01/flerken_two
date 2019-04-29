@@ -1,0 +1,11 @@
+{
+    "company":"shfanxi",
+    "email":"Jackson@shfanxi.com",
+    "expiration_date":"2032年4月19号",
+    "full_name":"Jackson",
+    "hostname":"4555e11a8c16efc32f80c42f1d3736b5",
+    "license_key":"be6b86e04ed1e16314b1ad3998bfde11",
+    "license_type":"Normal",
+    "nodes":20,
+    "start_date":"2019年4月20号"
+}

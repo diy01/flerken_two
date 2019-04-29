@@ -1,0 +1,128 @@
+<!-- Mainly scripts -->
+<script src="/static/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+
+<!-- Custom and plugin javascript -->
+<script src="/static/js/inspinia.js"></script>
+<script src="/static/js/plugins/pace/pace.min.js"></script>
+<script src="/static/libs/notify/bootstrap-notify.js"></script>
+<script src="/static/js/jquery.cookie.js"></script>
+<script src="/static/libs/bootstrap-table/bootstrap-table-zh-CN.js"></script>
+
+<script>
+
+    function getNotification() {
+        $.getJSON('{{ sso_base_domain }}/api/sso/notification/?format=jsonp&user_id={{ request.user.id }}&callback=?', function(data){
+            if(data.data && data.data.length > 0) {
+                var html = '';
+                $.each(data.data, function(k, v) {
+                    html += v.message;
+                });
+                if(html != '') {
+                    notify(html);
+                }
+            }
+        });
+    }
+
+    function notify(html) {
+        $.notify({
+            // options
+            icon: 'glyphicon glyphicon-warning-sign',
+            title: '系统通知'
+        }, {
+            // settings
+            element: 'body',
+            type: "info",
+            allow_dismiss: true,
+            newest_on_top: false,
+            showProgressbar: false,
+            placement: {
+                from: "bottom",
+                align: "right"
+            },
+            offset: 10,
+            spacing: 10,
+            z_index: 1031,
+            delay: 10000,
+            timer: 1000,
+            url_target: '_blank',
+            animate: {
+                enter: 'animated fadeInDown',
+                exit: 'animated fadeOutUp'
+            },
+            icon_type: 'class',
+            template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+                '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+                '<span data-notify="icon"></span> ' +
+                '<span data-notify="title"> <strong>{1}</strong></span>' +
+                '<div>' + html + '</div>' +
+                '<div class="progress" data-notify="progressbar">' +
+                    '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+            '</div>'
+        });
+    }
+
+    setTimeout(getNotification, 5000);
+    setInterval(getNotification, 30000);
+
+    var params = getParams();
+    var path = document.location.pathname;
+    var element = null;
+    $(".menu-path").each(function(){
+        var url = $(this).attr('href');
+        if(typeof params._parent != 'undefined') {
+            if(params._parent == url) {
+                element = $(this);
+                return
+            }
+        } else if(path == url) {
+            element = $(this);
+            return
+        } else if(path.indexOf(url) == 0) {
+            if(element == null) {
+                element = $(this);
+            }
+        }
+    });
+    if(element) {
+        element.parent().addClass('active');
+        element.parent().parent().addClass('active');
+        element.parent().parent().parent().addClass('active');
+        element.parent().parent().parent().parent().addClass('active');
+    }
+
+    function historyUrl() {
+        var history = $.cookie("history");
+        var hisArr = [];
+        if(history) {
+            try {
+                hisArr = JSON.parse(history);
+                var html = []
+                $.each(hisArr, function(k, v) {
+                    html.push("<a style='margin-left: 5px; margin-right: 5px;' href='" + v.url + "'>" + v.title + "</a>")
+                });
+                if(html.length > 0) {
+                    $("#history_url").html("<strong>访问历史:</strong>" + html.join(">"));
+                }
+            } catch(e) {
+
+            }
+        }
+        var url = document.URL;
+        var title = $(".ibox-title h5").eq(0).text();
+        if(title == null || title == '') return;
+        var newHisArr = [];
+        $.each(hisArr, function(k, v) {
+            if(title != v.title) {
+                newHisArr.push(v);
+            }
+        });
+        if(newHisArr.length >= 3) {
+            newHisArr.shift();
+        }
+        newHisArr.push({title: title, url: url})
+        $.cookie("history", JSON.stringify(newHisArr), {expires:1, path: "/"});
+    }
+    historyUrl();
+</script>

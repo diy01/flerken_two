@@ -1,0 +1,43 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            {% include 'nav_li_profile.html' %}
+
+{% for menu in menus %}
+    {% if menu.has_children == True %}
+            <li class="left-menu">
+                <a><i class="fa fa-{{ menu.tag }}"></i> <span class="nav-label">{{ menu.name }}</span><span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        {% for sub_menu in menu.children %}
+                               <li class="left-menu">
+                                    <a class="menu-path" href="{{ sub_menu.path }}">
+                                        {{ sub_menu.name }}
+                                        {% if sub_menu.name == '待办问题' %}
+                                        <span class="label label-default label-primary pull-right">{{problem_todo_num}}</span>
+                                        {% endif %}
+
+                                        {% if sub_menu.name == '待办事件' %}
+                                        <span class="label label-default label-primary pull-right">{{event_todo_num}}</span>
+                                        {% endif %}
+
+                                        {% if sub_menu.name == '待办变更' %}
+                                        <span class="label label-default label-primary pull-right">{{change_todo_num}}</span>
+                                        {% endif %}
+
+                                        {% if sub_menu.name == '待办工单' %}
+                                        <span class="label label-default label-primary pull-right">{{ticket_todo_num}}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                        {% endfor %}
+                    </ul>
+            </li>
+    {% endif %}
+{% endfor %}
+        </ul>
+    </div>
+</nav>
+
+
+
+
