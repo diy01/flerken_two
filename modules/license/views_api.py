@@ -2,10 +2,11 @@
 # -*- coding:utf-8 -*-
 
 from modules.license.models import *
-from modules.license.serializers import *
 from utils.base import BaseListCreateAPIView, BaseRetrieveUpdateDestroyAPIView
-from django_filters.rest_framework.backends import DjangoFilterBackend, SearchFilter
-from modules.License.serializers import *
+from django_filters.rest_framework.backends import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+
+from modules.license.serializers import *
 
 
 

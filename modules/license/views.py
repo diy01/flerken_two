@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from utils.base import PublicView
-
 # Create your views here.
 
 

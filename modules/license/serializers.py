@@ -1,9 +1,8 @@
 from rest_framework import serializers
-from .models import *
-
+from modules.license.models import *
 
 class LicenseSerializer(serializers.ModelSerializer):
 
-    class Meat:
-        module = License
+    class Meta:
+        model = License
         fields = '__all__'

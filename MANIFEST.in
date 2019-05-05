@@ -1,0 +1,6 @@
+recursive-include templates *
+recursive-include docs *
+recursive-include static *
+include .gitignore
+include db.sqlite3
+include manage.py

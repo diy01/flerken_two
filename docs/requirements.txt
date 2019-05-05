@@ -7,7 +7,7 @@ celery==4.3.0rc2
 certifi==2018.11.29
 cffi==1.12.2
 chardet==3.0.4
-croniter==0.3.27
+croniter==0.3.30
 cryptography==2.6.1
 Django==2.1.7
 django-auth-ldap==1.7.0
@@ -46,3 +46,4 @@ svn==0.3.46
 tzlocal==1.5.1
 urllib3==1.24.1
 vine==1.2.0
+

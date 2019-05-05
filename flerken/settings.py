@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+from flerken import configs
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,9 +25,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'g_r)8v&ll-3b%r=833jk7!^=g8#oac2c$e!^6ghxir+mi15oj8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = configs.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,24 +39,38 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    # 'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'modules.users',
+    'modules.license',
+    'equipment',
+
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'flerken.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,15 +86,74 @@ TEMPLATES = [
 WSGI_APPLICATION = 'flerken.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.DjangoModelPermissions',),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'flerken.auth.CsrfExemptSessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': configs.DB_NAME,
+        # 'USER': configs.DB_USER,
+        # 'PASSWORD': configs.DB_PASSWORD,
+        # 'HOST': configs.DB_HOST,
+        # 'PORT': configs.DB_PORT,
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'devicemanagementdb',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '3306',
+    },
+    # 'sso': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': configs.SSO_DB_NAME,
+    #     'USER': configs.SSO_DB_USER,
+    #     'PASSWORD': configs.SSO_DB_PASSWORD,
+    #     'HOST': configs.SSO_DB_HOST,
+    #     'PORT': configs.SSO_DB_PORT,
+    # },
 }
+
+DATABASE_ROUTERS = ['flerken.dbrouter.DatabaseRouter']
+
+DATABASE_APPS_MAPPING = {
+    'admin': 'sso',
+    'auth':  'sso',
+    'contenttypes': 'sso',
+    'sessions': 'sso',
+    'authtoken': 'sso',
+    'users': 'sso',
+    'cmdb': 'cmdb',
+}
+
+############################## AD配置 ###############################
+AUTHENTICATION_BACKENDS = (
+    'flerken.backend.ldapbackend.SSOLDAPBackend', # 使用自定义的backend从数据库中获取ldap配置
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "cn",
+    "email": "mail"
+}
+
+############################### AD配置 ###############################
 
 
 # Password validation
@@ -99,13 +174,70 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+if configs.REDIS.get('PASSWORD'):
+    redisCaches = 'redis://{password}@{host}:{port}/6'.format(password=configs.REDIS['PASSWORD'], host=configs.REDIS['HOST'], port=configs.REDIS['PORT'])
+else:
+    redisCaches = 'redis://{host}:{port}/6'.format(host=configs.REDIS['HOST'], port=configs.REDIS['PORT'])
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'job': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': redisCaches,
+        'KEY_PREFIX': 'job',
+        'TIMEOUT': 86400,
+        'OPTIONS': {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] [%(filename)s] [%(funcName)s:%(lineno)d] - %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'default': {
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+            'class': 'logging.FileHandler',
+            'filename': '{0}/flerken.log'.format(configs.LOG),
+        },
+        'error': {
+            'level': 'ERROR',
+            'formatter': 'verbose',
+            'class': 'logging.FileHandler',
+            'filename': '{0}/flerken_error.log'.format(configs.LOG),
+        },
+    },
+    'loggers': {
+        'monitor': {
+            'handlers': ['default', 'error'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -118,3 +250,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = "staticfile"
+
+STATICFILES_DIRS = (
+    # Put strings here, like "/home/html/static" or "C:/www/django/static".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    BASE_DIR + "/static",
+)
+

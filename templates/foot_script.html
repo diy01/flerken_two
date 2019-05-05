@@ -10,20 +10,6 @@
 
 <script>
 
-    function getNotification() {
-        $.getJSON('{{ sso_base_domain }}/api/sso/notification/?format=jsonp&user_id={{ request.user.id }}&callback=?', function(data){
-            if(data.data && data.data.length > 0) {
-                var html = '';
-                $.each(data.data, function(k, v) {
-                    html += v.message;
-                });
-                if(html != '') {
-                    notify(html);
-                }
-            }
-        });
-    }
-
     function notify(html) {
         $.notify({
             // options
@@ -62,9 +48,6 @@
             '</div>'
         });
     }
-
-    setTimeout(getNotification, 5000);
-    setInterval(getNotification, 30000);
 
     var params = getParams();
     var path = document.location.pathname;

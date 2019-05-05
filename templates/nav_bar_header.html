@@ -92,36 +92,20 @@ li {
 
 <!-- 全局搜索 -->
 <div class="modal fade" id="globalSearchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel"><label class="control-label" id="myTitle">全局搜索</label></h4>
-      </div>
-      <div class="modal-body">
-          <div class="panel panel-default" style="display:none;" id="global_asset_div">
-            <div class="panel-heading">
-                <h3 class="panel-title">主机信息</h3>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><label class="control-label" id="myTitle">全局搜索</label></h4>
             </div>
-            <div class="panel-body">
-                <div class="dan-table-menu form form-inline" id="_global_toolbar"></div>
-                <table id="global_asset_table" data-show-columns="false"></table>
+            <div class="modal-body">
+                <table id="global_user_table" data-show-columns="false"></table>
             </div>
-          </div>
-          <div class="panel panel-default" style="display:none;" id="global_app_div">
-            <div class="panel-heading">
-                <h3 class="panel-title">应用信息</h3>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"> 关闭 </button>
             </div>
-            <div class="panel-body">
-                <table id="global_app_table" data-show-columns="false"></table>
-            </div>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"> 关闭 </button>
-      </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- 全局搜索 -->
 
@@ -129,9 +113,8 @@ li {
 
 $("#top-search").on('change', function (e) {
     globalSearch();
-    e.stopPropagation();
-    return false;
 });
+
 $("#top-search").on('keydown', function (e) {
     var key = e.which;
     if (key == 13) {
@@ -141,245 +124,13 @@ $("#top-search").on('keydown', function (e) {
     }
 });
 
-function searchAssetHost() {
-    var _table = $('#global_asset_table').bootstrapTable('destroy').bootstrapTable({
-        method: 'get',
-        contentType:"application/json",
-        dataType: "json",
-        columns: [
-                {field: 'id',title: 'ID'},
-                {field: 'name', title: '名称', formatter: function opFormatter(value, row, index) {
-                    var html = "<div class='arrowed-in' style='white-space:nowrap;'><a href='/asset/detail/?pk=" + row.id + "' class='globalSearchACL'>" + value + "</a></div>";
-                    return html;
-                }},
-                {field: 'tags', title: 'Tag', formatter: function opFormatter(value, row, index) {
-                    var taglist = []
-                    $.each(value, function(k, v){
-                        taglist.push('<span class="label label-info arrowed-right arrowed-in" style="line-height: 25px;">' + v.key + ":" + v.value + '</span>')
-                    })
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + taglist.join("<br/>") + '</div>'
-                }},
-                {field: 'instance_id', title: '实例ID', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'aliyun_key_name', title: '账号名', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'ip', title: 'IP', sortable: true, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'state_name', title: '状态', formatter: function (value, row, index) {
-                    var state = row['state'];
-                    var html = value;
-                    if (state == 100) {
-                        html = '<span class="label label-primary arrowed-right arrowed-in">' + value + '</span>'
-                    } else if (state == -100) {
-                        html = '<span class="label label-danger arrowed-right arrowed-in">' + value + '</span>'
-                    } else if (state == 200) {
-                        html = '<span class="label label-warning arrowed-right arrowed-in">' + value + '</span>'
-                    } else if (state == 0) {
-                        html = '<span class="label label-info arrowed-right arrowed-in">' + value + '</span>'
-                    }
-                    return html;
-                }},
-                {field: 'env_name', title: '环境', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'asset_type_name', title: '设备类型', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'asset_number', title: '资产编号', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'publicip', title: '公网IP', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'other_ips', title: '其他IP', visible: false, formatter: function opFormatter(value, row, index) {
-                    var iplist = []
-                    $.each(value, function(k, v){
-                        iplist.push(v.ip + " (" + v.remark + ")")
-                    })
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + iplist.join("<br/>") + '</div>'
-                }},
-                {field: 'sn', title: '序列号', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'room_name', title: '机房', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'rack_name', title: '机柜', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'units', title: 'U位', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'firm_name', title: '厂商', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'number_name', title: '型号', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'oobip', title: '带外管理IP', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'parent_ip', title: '宿主机IP', visible:false, formatter: function(value, row, index) {
-                    return '<a href="/asset/detail/?pk='+row.hostid+'" style="white-space:nowrap;">'+ value +'</a>';
-                }},
-                {field: 'apps', title: '所属应用', visible:false, formatter: function(value, row, index) {
-                    var htmlarr = []
-                    for(var i in value) {
-                        var e = value[i]
-                       htmlarr.push("<a href='/app/app/detail/?id=" + e.id + "'>" + e.full_name + "</a>")
-                    }
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + htmlarr.join("<br/>") + '</div>'
-                }},
-                {field: 'leader_name', title: '业务负责人', visible:false, formatter: function(value, row, index) {
-                    if(value == null) {
-                        value = ""
-                    }
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'sa_name', title: '运维负责人', visible:false, formatter: function(value, row, index) {
-                    if(value == null) {
-                        value = ""
-                    }
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'inventory_time', title: '盘点日期', visible:false, formatter: function(value, row, index) {
-                    if(value == null) {
-                        value = ""
-                    }
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'shiptime', title: '购买时间', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'expirtime', title: '过保时间', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'contract', title: '合同', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'supplier_name', title: '供应商', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'provider_name', title: '维保服务商', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'number', title: '数量', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'mac', title: 'MAC', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'os_name', title: '操作系统', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'kernel', title: '内核', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'cpu', title: 'CPU核数', sortable: true, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'memory', title: '内存', sortable: true, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'amount', title: '价格', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'region_id', title: '地域ID', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'zone_id', title: '可用区ID', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'vpc_id', title: 'VPC ID', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'slave_zone_id', title: 'SLB备可用区ID', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'master_instance', title: 'Master ID', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'port', title: '端口', visible:false, formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }},
-                {field: 'remark', title: '备注', formatter: function(value, row, index) {
-                    return '<div class="arrowed-in" style="white-space:nowrap;">' + value + '</div>'
-                }}
-            ],
-        url: "{% url 'api_asset_host' %}?format=json",
-        queryParams: function (params) {
-            var search = $("#top-search").val();
-            params['search'] = search
-            return params
-        },
-        pagination: true,
-        pageSize: 10,
-        pageList: [10, 20, 50],
-        sidePagination: 'server',
-        showColumns: true,
-        toolbar: "#_global_toolbar",
-        cache: false,
-        responseHandler: function (res) {
-            if(res.count > 0) {
-                $("#global_asset_div").show();
-            } else {
-                $("#global_asset_div").hide();
-            }
-            return {
-                total: res.count,
-                rows: res.results
-            };
-        }
-    });
-}
-
-function searchApp() {
-    var app_table = $('#global_app_table').bootstrapTable('destroy').bootstrapTable({
-        columns: [
-            {field: 'id', title: 'ID'},
-            {field: 'full_name', title: '应用全称', formatter: function opFormatter(value, row, index) {
-                var html = "<a href='/app/?id=" + row.id + "' class='globalSearchACL'>" + value + "</a>";
-                return html;
-            }},
-            {field: 'domain', title: '域名'},
-            {field: 'port', title: '端口'},
-            {field: 'remark', title: '备注'}
-        ],
-        url: "{% url 'api_app' %}?format=json",
-        queryParams: function (params) {
-            var search = $("#top-search").val();
-            params['search'] = search
-            return params
-        },
-        pagination: true,
-        pageSize: 10,
-        pageList: [10, 20, 50],
-        sidePagination: 'server',
-        cache: false,
-        responseHandler: function (res) {
-            if(res.count > 0) {
-                $("#global_app_div").show();
-            } else {
-                $("#global_app_div").hide();
-            }
-            return {
-                total: res.count,
-                rows: res.results
-            };
-        }
-    });
-}
 
 function globalSearch() {
     var search = $("#top-search").val();
     if(search == "" || search == null) {
         return;
     }
-    searchAssetHost();
-    searchApp()
+    searchAllUsers()
     $("#globalSearchModal").modal('show');
 }
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.db import models
 
 # Create your models here.
@@ -14,8 +15,6 @@ class License(models.Model):
     hostname = models.CharField(null=False, max_length=32, verbose_name='主机名')
     start_date = models.CharField(null=False, max_length=30, verbose_name='生效时间')
     expiration_date = models.CharField(null=False, max_length=30, verbose_name='过期时间')
-    ctime = models.BigIntegerField(null=False, default=0, blank=True, verbose_name='创建时间')
-    cuser = models.IntegerField(null=False, default=0, verbose_name='创建用户')
 
     class Meta:
         db_table = 'license'

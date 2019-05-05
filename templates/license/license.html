@@ -39,6 +39,7 @@
                                 <i class="fa fa-trash"></i> 删除
                             </button>
 
+
                         </div>
 
                         <div id="my_grid">
@@ -146,28 +147,6 @@
 	            </div>
 	            <div class="col-lg-8">
 	            	<input type="text" id='expiration_date' name="expiration_date" class="form-control required"/>
-	            </div>
-            </div>
-          </div>
-
-            <div class="form-group">
-          	<div class="row">
-	          	<div class="col-lg-3" style="text-align: right">
-		            <span style="color:red">* </span><label for="_title" class="control-label">创建时间:</label>
-	            </div>
-	            <div class="col-lg-8">
-	            	<input type="text" id='ctime' name="ctime" class="form-control required"/>
-	            </div>
-            </div>
-          </div>
-
-            <div class="form-group">
-          	<div class="row">
-	          	<div class="col-lg-3" style="text-align: right">
-		            <span style="color:red">* </span><label for="_title" class="control-label">创建用户:</label>
-	            </div>
-	            <div class="col-lg-8">
-	            	<input type="text" id='cuser' name="cuser" class="form-control required"/>
 	            </div>
             </div>
           </div>
@@ -280,28 +259,6 @@
             </div>
           </div>
 
-            <div class="form-group">
-          	<div class="row">
-	          	<div class="col-lg-3" style="text-align: right">
-		            <span style="color:red">* </span><label for="_title" class="control-label">创建时间:</label>
-	            </div>
-	            <div class="col-lg-8">
-	            	<input type="text" id='_ctime' name="ctime" class="form-control required"/>
-	            </div>
-            </div>
-          </div>
-
-            <div class="form-group">
-          	<div class="row">
-	          	<div class="col-lg-3" style="text-align: right">
-		            <span style="color:red">* </span><label for="_title" class="control-label">创建用户:</label>
-	            </div>
-	            <div class="col-lg-8">
-	            	<input type="text" id='_cuser' name="cuser" class="form-control required"/>
-	            </div>
-            </div>
-          </div>
-
         </form>
       </div>
       <div class="modal-footer">
@@ -360,8 +317,6 @@ var columns = [
                 {field: 'hostname', title: '主机名'},
                 {field: 'start_date', title: '生效时间'},
                 {field: 'expiration_date', title: '过期时间'},
-                {field: 'ctime', title: '创建时间'},
-                {field: 'cuser', title: '创建用户'},
                 {field: '_op', title: '操作', formatter: opFormatter, events: "actionEvents"}
             ];
 
@@ -376,8 +331,6 @@ window.actionEvents = {
         var hostname = row['hostname'];
         var start_date = row['start_date'];
         var expiration_date = row['expiration_date'];
-        var ctime = row['ctime'];
-        var cuser = row['cuser'];
         $("#_id").val(row.id);
         $("#_company").val(row.company);
         $("#_email").val(row.email);
@@ -387,8 +340,6 @@ window.actionEvents = {
         $("#_hostname").val(row.hostname);
         $("#_start_date").val(row.start_date);
         $("#_expiration_date").val(row.expiration_date);
-        $("#_ctime").val(row.ctime);
-        $("#_cuser").val(row.cuser);
         var url = "{% url 'api_license' %}" + id + "/?format=json"
         $("#updateForm").attr("action", url);
     },

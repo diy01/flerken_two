@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: flerken
+Version: 0.0.5
+Summary: test 01
+Home-page: https://github.com/diy01/flerken
+Author: david
+Author-email: author@example.com
+License: UNKNOWN
+Description:  # Example Package
+         This is a simple example package. You can use
+         [Github-flavored Markdown](https://127.0.0.1:8007) 
+         to write your content.
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
